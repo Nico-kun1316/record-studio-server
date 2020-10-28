@@ -19,7 +19,8 @@ fun HTML.index() {
 }
 
 fun main() {
-    embeddedServer(Netty, port = 80) {
+    val port = System.getProperty("server.port", "8080").toInt()
+    embeddedServer(Netty, port = port) {
         routing {
             get("/") {
                 call.respondHtml(HttpStatusCode.OK, HTML::index)
