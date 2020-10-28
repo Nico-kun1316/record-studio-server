@@ -7,6 +7,11 @@ plugins {
 group = "io.github.nicodeath1316"
 version = "1.0-SNAPSHOT"
 
+tasks.jar {
+    manifest {
+        attributes("Main-Class" to "ServerKt")
+    }
+}
 repositories {
     mavenCentral()
     jcenter()
