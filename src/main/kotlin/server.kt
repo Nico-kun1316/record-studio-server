@@ -19,7 +19,7 @@ fun HTML.index() {
 }
 
 fun main() {
-    val port = System.getProperty("server.port", "8080").toInt()
+    val port = System.getenv().getOrDefault("PORT", "8080").toInt()
     embeddedServer(Netty, port = port) {
         routing {
             get("/") {
