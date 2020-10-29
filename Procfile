@@ -1,1 +1,1 @@
-web: java -Dserver.port=$PORT $JAVA_OPTS -jar build/libs/*.jar
+web: build/install/record-studio-server/bin/record-studio-server
