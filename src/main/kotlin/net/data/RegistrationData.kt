@@ -1,4 +1,4 @@
-package net
+package net.data
 
 import kotlinx.serialization.Serializable
 

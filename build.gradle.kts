@@ -28,6 +28,7 @@ dependencies {
     implementation("io.ktor:ktor-server-netty:1.4.0")
     implementation("io.ktor:ktor-html-builder:1.4.0")
     implementation("io.ktor:ktor-auth:1.4.0")
+    implementation("io.ktor:ktor-auth-jwt:1.4.0")
     implementation("io.ktor:ktor-serialization:1.4.0")
     implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.7.2")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.0-RC")
@@ -35,6 +36,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:0.28.1")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.28.1")
     implementation("org.postgresql:postgresql:42.2.18")
+    implementation("com.azure:azure-storage-blob:12.8.0")
 }
 tasks.withType<KotlinCompile>() {
     kotlinOptions.jvmTarget = "11"

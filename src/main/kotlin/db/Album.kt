@@ -4,11 +4,12 @@ import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
+import org.jetbrains.exposed.sql.ReferenceOption.CASCADE
 import java.util.*
 
 object Albums: UUIDTable() {
     val name = varchar("name", 128)
-    val author = reference("author", Authors)
+    val author = reference("author", Authors, onDelete = CASCADE, onUpdate = CASCADE)
 }
 
 class Album(id: EntityID<UUID>): UUIDEntity(id) {

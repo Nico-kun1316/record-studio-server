@@ -1,15 +1,12 @@
 package db
 
+import RNG
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.jetbrains.exposed.sql.StdOutSqlLogger
-import org.jetbrains.exposed.sql.Transaction
-import org.jetbrains.exposed.sql.addLogger
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.security.SecureRandom
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
-import kotlin.random.asKotlinRandom
 
 const val keyLength = 128
 const val iterationCount = 1000
@@ -23,8 +20,7 @@ fun hashPassword(pass: String, salt: ByteArray): ByteArray {
 }
 
 fun hashPassword(pass: String): Pair<ByteArray, ByteArray> {
-    val rng = SecureRandom.getInstanceStrong().asKotlinRandom()
-    val salt = rng.nextBytes(saltLength)
+    val salt = RNG.nextBytes(saltLength)
     return hashPassword(pass, salt) to salt
 }
 
@@ -36,3 +32,5 @@ suspend fun <T> asyncTransaction(block: Transaction.() -> T): T {
         }
     }
 }
+
+inline fun <reified T: Enum<T>> Table.enumeration(name: String): Column<T> = enumeration(name, T::class)
