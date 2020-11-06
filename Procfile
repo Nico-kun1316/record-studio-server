@@ -1,1 +1,1 @@
-web: build/install/${rootProject.name}/bin/${rootProject.name}
+web: build/install/record-studio-server/bin/record-studio-server
