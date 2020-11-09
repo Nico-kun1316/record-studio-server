@@ -7,7 +7,7 @@ import org.jetbrains.exposed.dao.id.UUIDTable
 import java.util.*
 
 object Authors: UUIDTable() {
-    val name = varchar("name", 128)
+    val name = varchar("name", 128).uniqueIndex()
 }
 
 class Author(id: EntityID<UUID>): UUIDEntity(id) {

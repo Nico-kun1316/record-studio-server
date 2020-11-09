@@ -27,7 +27,6 @@ fun hashPassword(pass: String): Pair<ByteArray, ByteArray> {
 suspend fun <T> asyncTransaction(block: Transaction.() -> T): T {
     return withContext(Dispatchers.IO) {
         transaction {
-            addLogger(StdOutSqlLogger)
             block()
         }
     }

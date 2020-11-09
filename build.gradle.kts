@@ -35,6 +35,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-core:0.28.1")
     implementation("org.jetbrains.exposed:exposed-dao:0.28.1")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.28.1")
+    implementation("org.jetbrains.exposed:exposed-java-time:0.28.1")
     implementation("org.postgresql:postgresql:42.2.18")
     implementation("com.azure:azure-storage-blob:12.8.0")
 }

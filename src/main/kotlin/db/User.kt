@@ -10,7 +10,7 @@ import org.jetbrains.exposed.sql.and
 import java.util.*
 
 enum class Roles(val dbName: String) {
-    ADMIN("admin"), OWNER("owner"), USER("user")
+    USER("user"), ADMIN("admin"), OWNER("owner")
 }
 
 object Users: UUIDTable() {

@@ -8,10 +8,7 @@ import io.ktor.routing.*
 import io.ktor.serialization.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import net.AuthenticationException
-import net.AuthorizationException
-import net.registerAuth
-import net.registerRoutes
+import net.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.StdOutSqlLogger
@@ -49,8 +46,7 @@ fun main() {
 
     embeddedServer(Netty, port = port) {
         install(StatusPages) {
-            exception<AuthorizationException> { call.respond(HttpStatusCode.Forbidden) }
-            exception<AuthenticationException> { call.respond(HttpStatusCode.Unauthorized) }
+            exception<StatusException> { call.response.status(it.status) }
         }
         install(ContentNegotiation) {
             json()

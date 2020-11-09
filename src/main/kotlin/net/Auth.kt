@@ -3,14 +3,10 @@ package net
 import RNG
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import db.User
-import db.Users
-import db.asyncTransaction
-import db.validateCredentials
+import db.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
-import net.Claims.ID
-import net.Claims.TYPE
+import net.Claims.*
 import java.util.*
 
 val secret = RNG.nextBytes(32)
@@ -22,15 +18,31 @@ private enum class TokenType {
 }
 
 private enum class Claims {
-    ID, TYPE
+    ID, TYPE, ROLE
 }
 
-private fun getIdFromToken(credential: JWTCredential, requiredType: TokenType): UUID? {
-    val idClaim = credential.payload.claims[ID.name]?.asString()
-    val type = credential.payload.claims[TYPE.name]?.asString()
+private fun getIdFromToken(
+        credential: JWTCredential,
+        requiredType: TokenType,
+        elevated: Boolean = false
+): UUID? {
+
+    val claims = credential.payload.claims
+    val roleString = claims[ROLE.name]?.asString()
+    val typeString = claims[TYPE.name]?.asString()
+    val idString = claims[ID.name]?.asString()
+
+    if (roleString == null || typeString == null || idString == null)
+        return null
+
+    val type = TokenType.valueOf(typeString)
+    val role = Roles.valueOf(roleString)
+
     val expired = credential.payload.expiresAt.before(Date())
-    return if (!expired && idClaim != null && type == requiredType.name)
-        UUID.fromString(idClaim)
+    val permitted = if (elevated) role >= Roles.ADMIN else true
+
+    return if (!expired && type == requiredType && permitted)
+        UUID.fromString(idString)
     else
         null
 }
@@ -42,6 +54,12 @@ fun Authentication.Configuration.registerAuth() {
         verifier(getVerifier())
         validate { credential ->
             getIdFromToken(credential, TokenType.TOKEN)?.let { UserUUIDPrincipal(it) }
+        }
+    }
+    jwt("admin") {
+        verifier(getVerifier())
+        validate { credential ->
+            getIdFromToken(credential, TokenType.TOKEN, true)?.let { UserUUIDPrincipal(it) }
         }
     }
     jwt("refresh") {
@@ -64,7 +82,7 @@ fun Authentication.Configuration.registerAuth() {
     }
 }
 
-private fun createJWTToken(id: UUID, type: TokenType, daysTilExpiry: Int): String {
+private fun createJWTToken(id: UUID, role: Roles, type: TokenType, daysTilExpiry: Int): String {
     val calendar = GregorianCalendar()
     calendar.time = Date()
     calendar.add(Calendar.DAY_OF_YEAR, daysTilExpiry)
@@ -73,17 +91,15 @@ private fun createJWTToken(id: UUID, type: TokenType, daysTilExpiry: Int): Strin
             .withIssuer(issuer)
             .withClaim(ID.name, id.toString())
             .withClaim(TYPE.name, type.name)
+            .withClaim(ROLE.name, role.name)
             .withExpiresAt(calendar.time)
             .sign(algorithm)
 }
 
 
-fun generateTokensForId(id: UUID): Pair<String, String> {
-    val token = createJWTToken(id, TokenType.TOKEN, 1)
-    val refreshToken = createJWTToken(id, TokenType.REFRESH_TOKEN, 7)
+fun generateTokensForUser(user: User): Pair<String, String> {
+    val token = createJWTToken(user.id.value, user.role, TokenType.TOKEN, 1)
+    val refreshToken = createJWTToken(user.id.value, user.role, TokenType.REFRESH_TOKEN, 7)
     return token to refreshToken
 }
 
-class AuthorizationException(message: String? = null, cause: Throwable? = null) : RuntimeException(message, cause)
-
-class AuthenticationException(message: String? = null, cause: Throwable? = null) : RuntimeException(message, cause)

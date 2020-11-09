@@ -5,7 +5,7 @@ import net.UUIDSerializer
 import java.util.*
 
 @Serializable
-data class PublicUserData(
+data class UserData(
         val username: String,
         val discriminator: Short,
         @Serializable(with = UUIDSerializer::class)
