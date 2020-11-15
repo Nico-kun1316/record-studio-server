@@ -1,6 +1,6 @@
 package db
 
-import RNG
+import misc.RNG
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.sql.*

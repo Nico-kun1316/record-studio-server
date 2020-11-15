@@ -1,3 +1,5 @@
+package misc
+
 import java.security.SecureRandom
 import kotlin.random.Random
 import kotlin.random.asKotlinRandom

@@ -22,3 +22,8 @@ class NotFoundException(
         message: String? = null,
         cause: Throwable? = null
 ) : StatusException(HttpStatusCode.NotFound, message, cause)
+
+class InvalidParameterException(
+        message: String? = null,
+        cause: Throwable? = null
+) : StatusException(HttpStatusCode.BadRequest, message, cause)

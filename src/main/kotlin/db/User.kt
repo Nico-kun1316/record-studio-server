@@ -1,7 +1,7 @@
 package db
 
-import RNG
-import nextShort
+import misc.RNG
+import misc.nextShort
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID

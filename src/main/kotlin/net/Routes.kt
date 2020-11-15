@@ -36,6 +36,7 @@ fun Route.registerRoutes() {
             authenticate("admin") {
                 deleteUser()
                 createAuthor()
+                deleteAuthor()
             }
             createUser()
         }
@@ -43,14 +44,14 @@ fun Route.registerRoutes() {
 
     route("/auth/v1") {
         authenticate("basic") {
-            get("token") {
+            post("token") {
                 val user = call.user()
                 val (token, refreshToken) = generateTokensForUser(user)
                 call.respond(TokenData(token, refreshToken))
             }
         }
         authenticate("refresh") {
-            get("refresh_token") {
+            post("refresh_token") {
                 val user = call.user()
                 val (token, refreshToken) = generateTokensForUser(user)
                 call.respond(TokenData(token, refreshToken))

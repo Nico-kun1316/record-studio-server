@@ -9,6 +9,7 @@ import io.ktor.serialization.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import net.*
+import net.data.ErrorData
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.StdOutSqlLogger
@@ -46,7 +47,7 @@ fun main() {
 
     embeddedServer(Netty, port = port) {
         install(StatusPages) {
-            exception<StatusException> { call.response.status(it.status) }
+            exception<StatusException> { call.respond(it.status, ErrorData(it.message ?: "")) }
         }
         install(ContentNegotiation) {
             json()

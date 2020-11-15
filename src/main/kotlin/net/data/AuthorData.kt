@@ -1,7 +1,6 @@
 package net.data
 
 import kotlinx.serialization.Serializable
-import net.UUIDSerializer
 import java.util.*
 
 @Serializable

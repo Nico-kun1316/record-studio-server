@@ -7,11 +7,9 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import misc.toUUID
 import net.NotFoundException
-import net.data.AuthorCreationData
-import net.data.AuthorData
-import net.data.page
-import net.data.paged
+import net.data.*
 import java.util.*
 
 fun Route.createAuthor() = post("authors") {
@@ -42,7 +40,7 @@ fun Route.fetchAuthors() = get("authors") {
 }
 
 fun Route.deleteAuthor() = delete("authors/{id}") {
-    val id = UUID.fromString(call.parameters["id"])
+    val id = call.parameters["id"].toUUID()
     asyncTransaction {
         val author = Author.findById(id) ?: throw NotFoundException("Author doesn't exist")
         author.delete()

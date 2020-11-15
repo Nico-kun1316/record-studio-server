@@ -24,6 +24,7 @@ val Parameters.page: Page
         return Page(number, itemCount, ordering)
     }
 
-fun <E : UUIDEntity> UUIDEntityClass<E>.paged(page: Page): SizedIterable<E> = all()
-        .limit(page.itemCount, page.number.toLong() * page.itemCount.toLong())
-        .orderBy(table.id to page.ordering)
+fun <E : UUIDEntity> UUIDEntityClass<E>.paged(page: Page): SizedIterable<E> = all().paged(page)
+
+fun <E : UUIDEntity> SizedIterable<E>.paged(page: Page) =
+    limit(page.itemCount, page.number.toLong() * page.itemCount.toLong())
