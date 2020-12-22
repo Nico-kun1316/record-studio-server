@@ -41,6 +41,7 @@ fun Route.createRecord() = post("albums/{id}/records") {
                                 previewLocation = "${id}_preview"
                                 name = it.name
                                 price = it.price
+                                releasedOn = it.releasedOn
                             }
                         }
                     }
