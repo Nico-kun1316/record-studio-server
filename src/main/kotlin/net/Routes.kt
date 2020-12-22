@@ -32,12 +32,19 @@ fun Route.registerRoutes() {
                 fetchUsers()
                 fetchAuthor()
                 fetchAuthors()
+                fetchRecord()
+                fetchRecordData()
+                fetchAlbumsForAuthor()
             }
             authenticate("admin") {
+                patchUser()
                 deleteUser()
+                createAlbum()
                 createAuthor()
                 deleteAuthor()
+                createRecord()
             }
+            fetchRecordPreview()
             createUser()
         }
     }

@@ -7,5 +7,6 @@ import java.util.*
 data class AuthorData(
         @Serializable(with = UUIDSerializer::class)
         val id: UUID,
-        val name: String
+        val name: String,
+        val genre: Genres
 )

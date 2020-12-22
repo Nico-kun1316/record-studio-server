@@ -1,5 +1,6 @@
 package db
 
+import net.data.Genres
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -12,6 +13,7 @@ import java.util.*
 
 object Albums: UUIDTable() {
     val name = varchar("name", 128)
+    val genre = enumerationByName<Genres>("genre", 64).nullable().default(null)
     val releaseDate = date("release_date")
     val addedOn = datetime("added_on").defaultExpression(CurrentDateTime())
     val author = reference("author", Authors, onDelete = CASCADE, onUpdate = CASCADE)
@@ -21,6 +23,7 @@ class Album(id: EntityID<UUID>): UUIDEntity(id) {
     companion object: UUIDEntityClass<Album>(Albums)
 
     var name by Albums.name
+    var genre by Albums.genre
     var releaseDate by Albums.releaseDate
     var addedOn by Albums.addedOn
     var author by Author referencedOn Albums.author

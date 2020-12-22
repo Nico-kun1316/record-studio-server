@@ -12,9 +12,10 @@ import java.util.*
 
 object Records: UUIDTable() {
     val name = varchar("name", 128)
+    val price = decimal("price", 20, 2)
     val location = varchar("location", 512)
     val previewLocation = varchar("preview_location", 512)
-    val releasedOn = date("released_on").nullable().default(null)
+    val releasedOn = date("released_on")
     val addedOn = datetime("added_on").defaultExpression(CurrentDateTime())
     val album = reference("album", Albums, onDelete = CASCADE, onUpdate = CASCADE)
 }
@@ -23,6 +24,7 @@ class Record(id: EntityID<UUID>): UUIDEntity(id) {
     companion object: UUIDEntityClass<Record>(Records)
 
     var name by Records.name
+    var price by Records.price
     var location by Records.location
     var previewLocation by Records.previewLocation
     var releasedOn by Records.releasedOn

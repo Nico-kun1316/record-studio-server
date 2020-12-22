@@ -10,17 +10,21 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import misc.toUUID
 import net.NotFoundException
+import net.assertParam
 import net.data.*
 
 fun Route.createAlbum() = post("authors/{id}/albums") {
     val id = call.parameters["id"].toUUID()
-    val data = call.receive<AlbumCreationData>()
+    val data: AlbumCreationData = call.receive()
+    assertParam(data.name, { trim().isNotEmpty() })
+
     val albumId = asyncTransaction {
-        val author = Author.findById(id) ?: throw NotFoundException("Author doesn't exist")
+        val albumAuthor = Author.findById(id) ?: throw NotFoundException("Author doesn't exist")
         Album.new {
-            this.author = author
-            this.name = data.name
-            this.releaseDate = data.releasedOn
+            author = albumAuthor
+            name = data.name
+            releaseDate = data.releasedOn
+            genre = data.genre
         }.id.value
     }
 
@@ -33,7 +37,14 @@ fun Route.fetchAlbumsForAuthor() = get("authors/{id}/albums") {
     val albums = asyncTransaction {
         val author = Author.findById(id) ?: throw NotFoundException("Author doesn't exist")
         author.albums.paged(page).map {
-            AlbumData(it.name, it.releaseDate, it.addedOn, author.id.value)
+            AlbumData(
+                it.name,
+                setOfNotNull(it.genre, author.genre),
+                it.releaseDate,
+                it.addedOn,
+                it.id.value,
+                author.id.value
+            )
         }
     }
 

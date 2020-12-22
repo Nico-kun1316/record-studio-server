@@ -1,5 +1,6 @@
 package net.route
 
+import db.Roles
 import db.User
 import db.asyncTransaction
 import db.register
@@ -9,17 +10,19 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import misc.toUUID
-import net.AuthorizationException
-import net.NotFoundException
+import net.*
 import net.data.*
-import net.privilegedUser
-import net.user
 import java.sql.SQLException
 import java.util.*
 
 fun Route.createUser() = post("users") {
     try {
-        val data = call.receive<RegistrationData>()
+        val data: RegistrationData = call.receive()
+
+        assertParam(data.username, { length >= 6 })
+        assertParam(data.login, { length >= 6 })
+        assertParam(data.password, { length >= 6 })
+
         val user = User.register(data.username, data.login, data.password)
         call.respond(HttpStatusCode.Created, IdData(user.id.value))
     } catch (e: SQLException) {
@@ -30,11 +33,37 @@ fun Route.createUser() = post("users") {
 fun Route.fetchUser() = get("users/{id}") {
     val author = call.user()
     val idString = call.parameters["id"]
+
     val user = if (idString == "@me")
         author
     else
-        asyncTransaction { User.findById(idString.toUUID()) ?: throw NotFoundException("User doesn't exist") }
+        asyncTransaction {
+            User.findById(idString.toUUID()) ?: throw NotFoundException("User doesn't exist")
+        }
+
     call.respond(UserData(user.username, user.discriminator, user.id.value, user.role))
+}
+
+fun Route.patchUser() = patch("users/{id}") {
+    val subject = call.privilegedUser()
+    val data: UserPatchData = call.receive()
+    val id = call.parameters["id"].toUUID()
+    val obj = asyncTransaction { User.findById(id) ?: throw NotFoundException("Can't find user") }
+    when {
+        subject.role == Roles.OWNER && data.role == Roles.OWNER -> {
+            asyncTransaction {
+                obj.role = data.role
+                subject.role = Roles.ADMIN
+            }
+        }
+        data.role < subject.role && obj.role <= subject.role -> {
+            asyncTransaction {
+                obj.role = data.role
+            }
+        }
+        else -> throw AuthorizationException("Insufficient privileges")
+    }
+    call.response.status(HttpStatusCode.NoContent)
 }
 
 fun Route.fetchUsers() = get("users") {

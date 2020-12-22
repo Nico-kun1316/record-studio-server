@@ -33,3 +33,6 @@ suspend fun <T> asyncTransaction(block: Transaction.() -> T): T {
 }
 
 inline fun <reified T: Enum<T>> Table.enumeration(name: String): Column<T> = enumeration(name, T::class)
+
+inline fun <reified T: Enum<T>> Table.enumerationByName(name: String, length: Int) =
+    enumerationByName(name, length, T::class)

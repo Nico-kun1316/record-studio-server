@@ -27,3 +27,8 @@ class InvalidParameterException(
         message: String? = null,
         cause: Throwable? = null
 ) : StatusException(HttpStatusCode.BadRequest, message, cause)
+
+class IllegalMediaTypeException(
+        message: String? = null,
+        cause: Throwable? = null
+) : StatusException(HttpStatusCode.UnsupportedMediaType, message, cause)
