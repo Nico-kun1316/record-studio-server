@@ -31,6 +31,21 @@ fun Route.createAlbum() = post("authors/{id}/albums") {
     call.respond(HttpStatusCode.Created, IdData(albumId))
 }
 
+fun Route.fetchAlbums() = get("albums") {
+    val page = call.parameters.page
+    val albums = asyncTransaction {
+        Album.paged(page).map { AlbumData(
+            it.name,
+            setOfNotNull(it.genre, it.author.genre),
+            it.releaseDate,
+            it.addedOn,
+            it.id.value,
+            it.author.id.value
+        ) }
+    }
+    call.respond(albums)
+}
+
 fun Route.fetchAlbumsForAuthor() = get("authors/{id}/albums") {
     val id = call.parameters["id"].toUUID()
     val page = call.parameters.page

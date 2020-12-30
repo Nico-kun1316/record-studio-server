@@ -20,6 +20,8 @@ import misc.toUUID
 import net.*
 import net.data.RecordCreationData
 import net.data.RecordData
+import net.data.page
+import net.data.paged
 import java.util.*
 
 fun Route.createRecord() = post("albums/{id}/records") {
@@ -88,6 +90,26 @@ fun Route.fetchRecordData() = get("records/{id}") {
             ?: throw NotFoundException("Track cannot be found")
     }
     call.respond(record)
+}
+
+fun Route.fetchRecords() = get("records") {
+    val page = call.parameters.page
+    val records = asyncTransaction {
+        Record.paged(page).map { RecordData(it.id.value, it.album.id.value, it.name, it.price, it.releasedOn) }
+    }
+    call.respond(records)
+}
+
+fun Route.fetchRecordsForAlbum() = get("albums/{id}/records") {
+    val albumId = call.parameters["id"].toUUID()
+    val page = call.parameters.page
+    val records = asyncTransaction {
+        val album = Album.findById(albumId) ?: throw NotFoundException("Cannot find author")
+        album.records.paged(page).map {
+            RecordData(it.id.value, it.album.id.value, it.name, it.price, it.releasedOn)
+        }
+    }
+    call.respond(records)
 }
 
 @OptIn(KtorExperimentalAPI::class)
