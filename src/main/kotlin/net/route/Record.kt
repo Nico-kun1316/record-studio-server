@@ -50,14 +50,11 @@ fun Route.createRecord() = post("albums/{id}/records") {
                 }
                 is PartData.FileItem -> withContext(Dispatchers.IO) {
                     val name = if (partData.name == "preview") "${id}_preview" else "$id"
-                    val length = partData.headers[HttpHeaders.ContentLength]?.toLong()
-                    if (length == null) {
-                        asyncTransaction { Record.findById(id)?.delete() }
-                        throw InvalidParameterException("File length is missing")
-                    }
-                    if (partData.contentType != ContentType.Audio.OGG) {
-                        asyncTransaction { Record.findById(id)?.delete() }
-                        throw IllegalMediaTypeException("File type must be audio/ogg, but is ${partData.contentType}")
+                    partData.headers[HttpHeaders.ContentLength]?.toLong()
+                        ?: throw InvalidParameterException("File length is missing")
+
+                    if (partData.contentType != ContentType.Audio.MPEG) {
+                        throw IllegalMediaTypeException("File type must be audio/mpeg, but is ${partData.contentType}")
                     }
                     val client = store.getBlobClient(name).blockBlobClient
                     partData.streamProvider().use {
@@ -122,7 +119,7 @@ suspend fun PipelineContext<Unit, ApplicationCall>.streamRecord(preview: Boolean
         }
         val store = call.storage
         val blob = store.getBlobClient(location)
-        call.respondBytesWriter(ContentType.Audio.OGG) {
+        call.respondBytesWriter(ContentType.Audio.MPEG) {
             val flow = blob.readFlow
             withContext(Dispatchers.IO) {
                 flow.collect {
