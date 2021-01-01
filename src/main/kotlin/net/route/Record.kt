@@ -22,6 +22,7 @@ import net.data.RecordCreationData
 import net.data.RecordData
 import net.data.page
 import net.data.paged
+import net.data.IdData
 import java.util.*
 
 fun Route.createRecord() = post("albums/{id}/records") {
@@ -66,7 +67,7 @@ fun Route.createRecord() = post("albums/{id}/records") {
                 is PartData.BinaryItem -> throw InvalidParameterException("Binary data is not supported")
             }
         }
-        call.response.status(HttpStatusCode.Created)
+        call.respond(HttpStatusCode.Created, IdData(id))
     } catch (e: Exception) {
         e.printStackTrace()
         asyncTransaction { Record.findById(id)?.delete() }
