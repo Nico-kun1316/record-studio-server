@@ -117,15 +117,8 @@ suspend fun PipelineContext<Unit, ApplicationCall>.streamRecord(preview: Boolean
             val record = Record.findById(id) ?: throw NotFoundException("Track doesn't exist")
             if (preview) record.previewLocation else record.location
         }
-        val store = call.storage
-        val blob = store.getBlobClient(location)
-        call.respondBytesWriter(ContentType.Audio.MPEG) {
-            val flow = blob.readFlow
-            withContext(Dispatchers.IO) {
-                flow.collect {
-                    writeFully(it, 0, it.size)
-                }
-            }
+        call.respondFile(call.files.get(location)) {
+            println("Content type: $contentType")
         }
     } catch (e: Exception) {
         e.printStackTrace()

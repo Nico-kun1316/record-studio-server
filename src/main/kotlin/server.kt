@@ -29,6 +29,7 @@ fun main() {
     val port = env.getOrDefault("PORT", "8080").toInt()
 
     val storage = getStorage(azureUrl, "storage")
+    val cache = FileCache(storage)
 
     transaction {
         addLogger(StdOutSqlLogger)
@@ -51,6 +52,7 @@ fun main() {
         routing {
             intercept(ApplicationCallPipeline.Call) {
                 call.attributes.put(storageKey, storage)
+                call.attributes.put(cacheKey, cache)
             }
             registerRoutes()
         }

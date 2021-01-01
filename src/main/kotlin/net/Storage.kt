@@ -6,6 +6,7 @@ import io.ktor.application.*
 import io.ktor.util.*
 
 val storageKey = AttributeKey<BlobContainerClient>("storage client")
+val cacheKey = AttributeKey<FileCache>("file cache")
 
 fun getStorage(url: String, container: String): BlobContainerClient {
     val azureClient = BlobServiceClientBuilder().connectionString(url).buildClient()
@@ -13,4 +14,7 @@ fun getStorage(url: String, container: String): BlobContainerClient {
 }
 
 val ApplicationCall.storage
-    get() = this.attributes[storageKey]
+    get() = attributes[storageKey]
+
+val ApplicationCall.files
+    get() = attributes[cacheKey]
