@@ -36,6 +36,7 @@ fun Route.registerRoutes() {
                 fetchRecords()
                 fetchRecordData()
                 fetchRecordsForAlbum()
+				fetchAlbum()
                 fetchAlbums()
                 fetchAlbumsForAuthor()
             }

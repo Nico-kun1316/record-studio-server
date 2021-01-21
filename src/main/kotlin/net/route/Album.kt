@@ -46,6 +46,14 @@ fun Route.fetchAlbums() = get("albums") {
     call.respond(albums)
 }
 
+fun Route.fetchAlbum() = get("albums/{id}") {
+	val id = call.parameters["id"].toUUID()
+	val album = asyncTransaction {
+		Album.findById(id) ?: throw NotFoundException("Album does't exist")
+	}
+	call.respond(HttpStatusCode.OK, album)
+}
+
 fun Route.fetchAlbumsForAuthor() = get("authors/{id}/albums") {
     val id = call.parameters["id"].toUUID()
     val page = call.parameters.page
